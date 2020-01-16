@@ -31,13 +31,22 @@ class Blockchain(object):
         """
 
         block = {
-            # TODO
+            'index': len(self.chain) + 1,
+            'timestamp': time(),
+            'transaction': self.current_transactions,
+            'proof': proof,
+            'previous hash': previous_hash
+
         }
 
         # Reset the current list of transactions
+        self.current_transactions=[]
+
         # Append the chain to the block
+        self.chain.append(block)
+
         # Return the new block
-        pass
+        return block
 
     def hash(self, block):
         """
@@ -56,8 +65,12 @@ class Blockchain(object):
         # or we'll have inconsistent hashes
 
         # TODO: Create the block_string
+        string_object = json.dumps(block, sort_keys=True).encode()
 
         # TODO: Hash this string using sha256
+        raw_hash = hashlib.sha256(string_object)
+
+        hex_hash = raw_hash.hexdigest()
 
         # By itself, the sha256 function returns the hash in a raw string
         # that will likely include escaped characters.
@@ -66,7 +79,7 @@ class Blockchain(object):
         # easier to work with and understand
 
         # TODO: Return the hashed block string in hexadecimal format
-        pass
+        return hex_hash
 
     @property
     def last_block(self):
@@ -128,10 +141,12 @@ def mine():
 def full_chain():
     response = {
         # TODO: Return the chain and its current length
+        'length': len(blockchain.chain),
+        'chain': blockchain.chain
     }
     return jsonify(response), 200
 
 
 # Run the program on port 5000
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(port=5000, debug=True)
